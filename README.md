@@ -33,6 +33,7 @@ Some rules to take note of:
 2) All classes that can be Serialized/Deserialized must have a field/property called `MessageId` with a `MsgKey` of `1`
     + Otherwise, an exception will throw
 3) While not required, it is recommended that MessageId should be the `typeof(type).FullName`
+4) The classes must be on both the Server and Client to be Serialized/Deserialized
 
 ### Creating a Server
 
