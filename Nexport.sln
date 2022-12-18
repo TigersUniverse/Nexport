@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexport", "Nexport\Nexport.csproj", "{B86B127E-E474-4CA8-8EE4-4050FD2F97F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexport.Tests", "Nexport.Tests\Nexport.Tests.csproj", "{316D92C7-B598-4753-8C59-A8A8FD17EC8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B86B127E-E474-4CA8-8EE4-4050FD2F97F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B86B127E-E474-4CA8-8EE4-4050FD2F97F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B86B127E-E474-4CA8-8EE4-4050FD2F97F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B86B127E-E474-4CA8-8EE4-4050FD2F97F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{316D92C7-B598-4753-8C59-A8A8FD17EC8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{316D92C7-B598-4753-8C59-A8A8FD17EC8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{316D92C7-B598-4753-8C59-A8A8FD17EC8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{316D92C7-B598-4753-8C59-A8A8FD17EC8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
