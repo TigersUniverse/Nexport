@@ -16,7 +16,7 @@ namespace Nexport.Transports.LiteNetLib
         
         public LiteNetLibServer(ServerSettings settings) : base(settings){}
 
-        public override TransportType TransportType => TransportType.Telepathy;
+        public override TransportType TransportType => TransportType.LiteNetLib;
         public override List<ClientIdentifier> ConnectedClients => new List<ClientIdentifier>(connectedClients.Keys);
         public override bool IsOpen => _server?.IsRunning ?? false;
         

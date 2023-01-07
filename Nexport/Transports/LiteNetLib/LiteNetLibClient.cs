@@ -11,7 +11,7 @@ namespace Nexport.Transports.LiteNetLib
         
         public LiteNetLibClient(ClientSettings settings) : base(settings){}
 
-        public override TransportType TransportType => TransportType.Telepathy;
+        public override TransportType TransportType => TransportType.LiteNetLib;
         public override bool IsOpen => _client?.IsRunning ?? false;
         
         public override void RunTask()
