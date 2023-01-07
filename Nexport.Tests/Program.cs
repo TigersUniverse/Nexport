@@ -12,7 +12,7 @@ namespace Nexport.Tests
         {
             Console.WriteLine("Is this a server? (y/n)");
             string inp = Console.ReadLine() ?? "n";
-            Console.WriteLine("Which Transport? (kcp/telepathy)");
+            Console.WriteLine("Which Transport? (kcp/telepathy/litenetlib)");
             TransportType transportType = Instantiator.GetTransportTypeFromString(Console.ReadLine() ?? "kcp");
             if (inp.ToLower().Contains("y"))
             {

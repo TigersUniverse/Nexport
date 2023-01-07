@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Nexport.Tests")]
-[assembly: AssemblyCopyright("Copyright © 200Tigersbloxed 2022")]
+[assembly: AssemblyCopyright("Copyright © 200Tigersbloxed 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

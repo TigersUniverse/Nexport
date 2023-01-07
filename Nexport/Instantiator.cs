@@ -1,6 +1,7 @@
 ﻿using System;
 using Nexport.Transports;
 using Nexport.Transports.kcp2k;
+using Nexport.Transports.LiteNetLib;
 using Nexport.Transports.Telepathy;
 
 namespace Nexport
@@ -15,6 +16,8 @@ namespace Nexport
                     return new KCPServer(settings);
                 case TransportType.Telepathy:
                     return new TelepathyServer(settings);
+                case TransportType.LiteNetLib:
+                    return new LiteNetLibServer(settings);
             }
             throw new Exception("Unknown Server");
         }
@@ -27,6 +30,8 @@ namespace Nexport
                     return new KCPClient(settings);
                 case TransportType.Telepathy:
                     return new TelepathyClient(settings);
+                case TransportType.LiteNetLib:
+                    return new LiteNetLibClient(settings);
             }
             throw new Exception("Unknown Server");
         }
@@ -37,6 +42,8 @@ namespace Nexport
                 return TransportType.KCP;
             if (transportString.ToLower().Contains("telepathy"))
                 return TransportType.Telepathy;
+            if (transportString.ToLower().Contains("litenetlib"))
+                return TransportType.LiteNetLib;
             throw new Exception("Unknown TransportType " + transportString);
         }
     }

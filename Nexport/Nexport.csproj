@@ -79,6 +79,7 @@
         <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
           <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
         </Reference>
+        <Reference Include="System.Runtime.Serialization" />
         <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
           <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
         </Reference>
@@ -114,6 +115,40 @@
         <Compile Include="Transports\kcp2k\kcp\Pool.cs" />
         <Compile Include="Transports\kcp2k\kcp\Segment.cs" />
         <Compile Include="Transports\kcp2k\kcp\Utils.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLibTools.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLibClient.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLibClientIdentifier.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLibServer.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\BaseChannel.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\ConnectionRequest.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\INetEventListener.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\InternalPackets.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Layers\Crc32cLayer.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Layers\PacketLayerBase.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Layers\XorEncryptLayer.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NativeSocket.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NatPunchModule.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetConstants.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetDebug.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetManager.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetManager.PacketPool.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetManager.Socket.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetPacket.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetPeer.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetStatistics.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\NetUtils.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\PooledPacket.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\ReliableChannel.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\SequencedChannel.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\CRC32C.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\FastBitConverter.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\INetSerializable.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NetDataReader.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NetDataWriter.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NetPacketProcessor.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NetSerializer.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NtpPacket.cs" />
+        <Compile Include="Transports\LiteNetLib\LiteNetLib\Utils\NtpRequest.cs" />
         <Compile Include="Transports\Telepathy\TelepathyClient.cs" />
         <Compile Include="Transports\Telepathy\TelepathyClientIdentifier.cs" />
         <Compile Include="Transports\Telepathy\TelepathyServer.cs" />
