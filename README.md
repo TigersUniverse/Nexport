@@ -203,3 +203,4 @@ Here, we switch-case the possible entries of MessageIds that are handled, then i
 
 + [kcp2k](https://github.com/vis2k/kcp2k)
 + [Telepathy](https://github.com/vis2k/Telepathy)
++ [LiteNetLib](https://github.com/RevenantX/LiteNetLib)
