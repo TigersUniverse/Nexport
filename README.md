@@ -120,7 +120,7 @@ server.Close();
 
 To create a client, all you need to do is create some ClientSettings, and then Instantiate a Client from the Instantiator class.
 
-Below is an example of creating ClientSettings, and a KCP Server
+Below is an example of creating ClientSettings, and a KCP Client
 
 ```cs
 ClientSettings clientSettings = new ClientSettings("127.0.0.1", 1234);
