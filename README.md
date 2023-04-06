@@ -3,7 +3,7 @@ A Simple C# Networking Library
 
 ## Support
 
-Nexport is written in C#, compiled to .Net Framework 4.8, however, any .Net Framework version (possibly even standard) should work fine.
+Nexport is written in C#, compiled to .Net Framework 4.8 and .NET 7
 
 ## How to use
 
