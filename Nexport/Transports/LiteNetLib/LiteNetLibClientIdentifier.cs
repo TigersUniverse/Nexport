@@ -1,11 +1,9 @@
-﻿using System;
-using LiteNetLib;
+﻿using LiteNetLib;
 
-namespace Nexport.Transports.LiteNetLib
+namespace Nexport.Transports.LiteNetLib;
+
+public class LiteNetLibClientIdentifier : ClientIdentifier
 {
-    public class LiteNetLibClientIdentifier : ClientIdentifier
-    {
-        public LiteNetLibClientIdentifier(NetPeer peer) => Identifier = peer.Id.ToString();
-        public int ToConnectionId() => Convert.ToInt32(Identifier);
-    }
+    public LiteNetLibClientIdentifier(NetPeer peer) => Identifier = peer.Id.ToString();
+    public int ToConnectionId() => Convert.ToInt32(Identifier);
 }

@@ -1,13 +1,12 @@
-﻿namespace Nexport
+﻿namespace Nexport;
+
+public enum MessageChannel
 {
-    public enum MessageChannel
-    {
-        // aka ReliableOrdered
-        Reliable,
-        ReliableUnordered,
-        ReliableSequenced,
-        Unreliable,
-        UnreliableSequenced,
-        Unknown
-    }
+    // aka ReliableOrdered
+    Reliable,
+    ReliableUnordered,
+    ReliableSequenced,
+    Unreliable,
+    UnreliableSequenced,
+    Unknown
 }

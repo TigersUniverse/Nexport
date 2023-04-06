@@ -1,11 +1,10 @@
-﻿namespace Nexport
-{
-    [Msg]
-    public class ClientIdentifier
-    {
-        [MsgKey(1)] public string MessageId => typeof(ClientIdentifier).FullName;
-        [MsgKey(2)] public string Identifier { get; set; }
+﻿namespace Nexport;
 
-        public virtual bool Compare(ClientIdentifier identifier) => string.Equals(Identifier, identifier.Identifier);
-    }
+[Msg]
+public class ClientIdentifier
+{
+    [MsgKey(1)] public string MessageId => typeof(ClientIdentifier).FullName;
+    [MsgKey(2)] public string Identifier { get; set; }
+
+    public virtual bool Compare(ClientIdentifier identifier) => string.Equals(Identifier, identifier.Identifier);
 }

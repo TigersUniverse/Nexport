@@ -1,9 +1,8 @@
-﻿namespace Nexport.Transports
+﻿namespace Nexport.Transports;
+
+public enum TransportType
 {
-    public enum TransportType
-    {
-        KCP = 0,
-        Telepathy = 1,
-        LiteNetLib = 2
-    }
+    KCP = 0,
+    Telepathy = 1,
+    LiteNetLib = 2
 }
