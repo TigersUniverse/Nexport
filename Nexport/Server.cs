@@ -15,12 +15,12 @@ public abstract class Server
     public ServerSettings Settings { get; }
 
     private CancellationTokenSource cts = new CancellationTokenSource();
-    private Thread _thread;
-    private Task _task;
+    private Thread? _thread;
+    private Task? _task;
 
     public Server(ServerSettings settings) => Settings = settings;
 
-    public void Create()
+    public void Create(bool closeOnStop = false, Func<byte[]?>? getClosingMessage = null)
     {
         cts = new CancellationTokenSource();
         if (Settings.UseMultithreading)
@@ -34,6 +34,9 @@ public abstract class Server
                     Thread.Sleep(Settings.ThreadUpdate);
                     PostUpdate();
                 }
+                if (!closeOnStop) return;
+                byte[] closingMessage = getClosingMessage?.Invoke() ?? Array.Empty<byte>();
+                Close(closingMessage);
             });
             _thread.Start();
         }
@@ -48,6 +51,9 @@ public abstract class Server
                     Thread.Sleep(Settings.ThreadUpdate);
                     PostUpdate();
                 }
+                if (!closeOnStop) return;
+                byte[] closingMessage = getClosingMessage?.Invoke() ?? Array.Empty<byte>();
+                Close(closingMessage);
             });
         }
     }
@@ -59,14 +65,14 @@ public abstract class Server
 
     public abstract void RunTask();
 
-    public abstract void Close(byte[] closingMessage = null);
+    public abstract void Close(byte[]? closingMessage = null);
 
     public abstract void SendMessage(ClientIdentifier client, byte[] message,
         MessageChannel messageChannel = MessageChannel.Reliable);
 
     public abstract void BroadcastMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable,
-        ClientIdentifier excludeClientIdentifier = null);
-    public abstract void KickClient(ClientIdentifier client, byte[] kickMessage = null);
+        ClientIdentifier? excludeClientIdentifier = null);
+    public abstract void KickClient(ClientIdentifier client, byte[]? kickMessage = null);
 }
 
 public class ServerSettings

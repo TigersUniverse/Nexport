@@ -5,11 +5,11 @@ namespace Nexport.Transports.kcp2k;
 
 public class KCPServer : Server
 {
-    private KcpServer _server;
+    private KcpServer? _server;
 
     private readonly Dictionary<KCPClientIdentifier, int> connectedClients =
         new Dictionary<KCPClientIdentifier, int>();
-    private ServerClientManager<KCPClientIdentifier, int> _clientManager;
+    private ServerClientManager<KCPClientIdentifier, int>? _clientManager;
 
     public KCPServer(ServerSettings settings) : base(settings){}
 
@@ -54,8 +54,8 @@ public class KCPServer : Server
             try
             {
                 byte[] msg = bytes.ToArray();
-                MsgMeta msgMeta = Msg.GetMeta(msg);
-                if (_clientManager.IsClientWaiting(i))
+                MsgMeta? msgMeta = Msg.GetMeta(msg);
+                if (_clientManager.IsClientWaiting(i) && msgMeta != null)
                 {
                     try
                     {
@@ -71,12 +71,13 @@ public class KCPServer : Server
                         _server?.Disconnect(i);
                     }
                 }
-                else
+                else if(msgMeta != null)
                 {
                     if (_clientManager.IsClientPresent(i))
                     {
-                        KCPClientIdentifier clientIdentifier = _clientManager.GetClientIdentifierFromConnected(i);
-                        OnMessage.Invoke(clientIdentifier, msgMeta, KCPTools.GetMessageChannel(channel));
+                        KCPClientIdentifier? clientIdentifier = _clientManager.GetClientIdentifierFromConnected(i);
+                        if(clientIdentifier != null)
+                            OnMessage.Invoke(clientIdentifier, msgMeta, KCPTools.GetMessageChannel(channel));
                     }
                     else
                         _server?.Disconnect(i);
@@ -95,22 +96,22 @@ public class KCPServer : Server
 
     public override void Update() => _server?.Tick();
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
         if(closingMessage != null)
             BroadcastMessage(closingMessage);
-        _server.Stop();
+        _server?.Stop();
     }
 
     public override void SendMessage(ClientIdentifier client, byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
-        int id = _clientManager.GetServerLinkFromConnected((KCPClientIdentifier) client);
+        int id = _clientManager?.GetServerLinkFromConnected((KCPClientIdentifier) client) ?? default;
         if (id != default)
-            _server.Send(id, new ArraySegment<byte>(message), KCPTools.GetKcpChannel(messageChannel));
+            _server?.Send(id, new ArraySegment<byte>(message), KCPTools.GetKcpChannel(messageChannel));
     }
 
     public override void BroadcastMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable,
-        ClientIdentifier excludeClientIdentifier = null)
+        ClientIdentifier? excludeClientIdentifier = null)
     {
         foreach (KeyValuePair<KCPClientIdentifier, int> keyValuePair in new Dictionary<KCPClientIdentifier, int>(
                      connectedClients))
@@ -122,19 +123,19 @@ public class KCPServer : Server
                     allowSend = true;
             }
             if(allowSend)
-                _server.Send(keyValuePair.Value, new ArraySegment<byte>(message),
+                _server?.Send(keyValuePair.Value, new ArraySegment<byte>(message),
                     KCPTools.GetKcpChannel(messageChannel));
         }
     }
 
-    public override void KickClient(ClientIdentifier client, byte[] kickMessage = null)
+    public override void KickClient(ClientIdentifier client, byte[]? kickMessage = null)
     {
-        int id = _clientManager.GetServerLinkFromConnected((KCPClientIdentifier) client);
+        int id = _clientManager?.GetServerLinkFromConnected((KCPClientIdentifier) client) ?? default;
         if (id != default)
         {
             if(kickMessage != null)
-                _server.Send(id, new ArraySegment<byte>(kickMessage), KcpChannel.Reliable);
-            _server.Disconnect(id);
+                _server?.Send(id, new ArraySegment<byte>(kickMessage), KcpChannel.Reliable);
+            _server?.Disconnect(id);
         }
     }
 }

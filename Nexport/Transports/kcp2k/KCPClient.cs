@@ -4,7 +4,7 @@ namespace Nexport.Transports.kcp2k;
 
 public class KCPClient : Client
 {
-    private KcpClient _client;
+    private KcpClient? _client;
         
     public KCPClient(ClientSettings settings) : base(settings){}
 
@@ -18,8 +18,9 @@ public class KCPClient : Client
             try
             {
                 byte[] data = bytes.ToArray();
-                MsgMeta meta = Msg.GetMeta(data);
-                OnMessage.Invoke(meta, KCPTools.GetMessageChannel(channel));
+                MsgMeta? meta = Msg.GetMeta(data);
+                if(meta != null)
+                    OnMessage.Invoke(meta, KCPTools.GetMessageChannel(channel));
             }
             catch (Exception e)
             {
@@ -34,14 +35,14 @@ public class KCPClient : Client
         
     public override void Update() => _client?.Tick();
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
-        _client.Disconnect();
+        _client?.Disconnect();
     }
 
     public override void SendMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
         if(IsOpen)
-            _client.Send(new ArraySegment<byte>(message), KCPTools.GetKcpChannel(messageChannel));
+            _client?.Send(new ArraySegment<byte>(message), KCPTools.GetKcpChannel(messageChannel));
     }
 }

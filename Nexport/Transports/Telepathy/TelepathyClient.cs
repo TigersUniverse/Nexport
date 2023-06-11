@@ -2,7 +2,7 @@
 
 public class TelepathyClient : Client
 {
-    private global::Telepathy.Client _client;
+    private global::Telepathy.Client? _client;
         
     public TelepathyClient(ClientSettings settings) : base(settings){}
 
@@ -18,8 +18,9 @@ public class TelepathyClient : Client
             try
             {
                 byte[] data = bytes.ToArray();
-                MsgMeta meta = Msg.GetMeta(data);
-                OnMessage.Invoke(meta, MessageChannel.Unknown);
+                MsgMeta? meta = Msg.GetMeta(data);
+                if(meta != null)
+                    OnMessage.Invoke(meta, MessageChannel.Unknown);
             }
             catch (Exception e)
             {
@@ -32,14 +33,14 @@ public class TelepathyClient : Client
 
     public override void Update() => _client?.Tick(100);
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
-        _client.Disconnect();
+        _client?.Disconnect();
     }
 
     public override void SendMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
         if(IsOpen)
-            _client.Send(new ArraySegment<byte>(message));
+            _client?.Send(new ArraySegment<byte>(message));
     }
 }

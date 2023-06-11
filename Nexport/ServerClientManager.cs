@@ -16,7 +16,7 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
     {
         foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(WaitingClients))
         {
-            if (keyValuePair.Value.Equals(serverLink))
+            if (keyValuePair.Value?.Equals(serverLink) ?? false)
                 return true;
         }
         return false;
@@ -26,33 +26,33 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
     {
         foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(ConnectedClients))
         {
-            if (keyValuePair.Value.Equals(serverLink))
+            if (keyValuePair.Value?.Equals(serverLink) ?? false)
                 return true;
         }
         return false;
     }
 
-    public T1 GetClientIdentifierFromWaiting(T2 serverLink)
+    public T1? GetClientIdentifierFromWaiting(T2 serverLink)
     {
         foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(WaitingClients))
         {
-            if (keyValuePair.Value.Equals(serverLink))
+            if (keyValuePair.Value?.Equals(serverLink) ?? false)
                 return keyValuePair.Key;
         }
-        return default;
+        return null;
     }
         
-    public T1 GetClientIdentifierFromConnected(T2 serverLink)
+    public T1? GetClientIdentifierFromConnected(T2 serverLink)
     {
         foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(ConnectedClients))
         {
-            if (keyValuePair.Value.Equals(serverLink))
+            if (keyValuePair.Value?.Equals(serverLink) ?? false)
                 return keyValuePair.Key;
         }
-        return default;
+        return null;
     }
         
-    public T2 GetServerLinkFromConnected(T1 clientIdentifier)
+    public T2? GetServerLinkFromConnected(T1 clientIdentifier)
     {
         foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(ConnectedClients))
         {
@@ -62,9 +62,9 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
         return default;
     }
         
-    public T2 GetServerLinkFromWaiting(T1 clientIdentifier)
+    public T2? GetServerLinkFromWaiting(T1 clientIdentifier)
     {
-        foreach (KeyValuePair<T1,T2> keyValuePair in new Dictionary<T1, T2>(WaitingClients))
+        foreach (KeyValuePair<T1, T2?> keyValuePair in new Dictionary<T1, T2?>(WaitingClients))
         {
             if (keyValuePair.Key.Compare(clientIdentifier))
                 return keyValuePair.Value;
@@ -72,7 +72,7 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
         return default;
     }
 
-    public void AddClient(T1 clientIdentifier, T2 serverLink, Action<bool> result, MsgMeta meta = null)
+    public void AddClient(T1 clientIdentifier, T2 serverLink, Action<bool> result, MsgMeta? meta = null)
     {
         if (!IsClientPresent(serverLink) && !IsClientWaiting(serverLink))
         {
@@ -121,23 +121,24 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
         }
         if (IsClientWaiting(serverLink))
         {
-            T1 clientIdentifier = GetClientIdentifierFromWaiting(serverLink);
-            _settings.ValidateMessage.Invoke(clientIdentifier, meta, b =>
-            {
-                if (b)
+            T1? clientIdentifier = GetClientIdentifierFromWaiting(serverLink);
+            if(clientIdentifier != null)
+                _settings.ValidateMessage.Invoke(clientIdentifier, meta, b =>
                 {
-                    WaitingClients.Remove(clientIdentifier);
-                    ConnectedClients.Add(clientIdentifier, serverLink);
-                    ClientConnected.Invoke(clientIdentifier, serverLink);
-                    result.Invoke(true);
-                }
-                else
-                {
-                    WaitingClients.Remove(clientIdentifier);
-                    ClientRemoved.Invoke(clientIdentifier, serverLink, true, false);
-                    result.Invoke(false);
-                }
-            });
+                    if (b)
+                    {
+                        WaitingClients.Remove(clientIdentifier);
+                        ConnectedClients.Add(clientIdentifier, serverLink);
+                        ClientConnected.Invoke(clientIdentifier, serverLink);
+                        result.Invoke(true);
+                    }
+                    else
+                    {
+                        WaitingClients.Remove(clientIdentifier);
+                        ClientRemoved.Invoke(clientIdentifier, serverLink, true, false);
+                        result.Invoke(false);
+                    }
+                });
             return;
         }
         result.Invoke(false);
@@ -145,14 +146,14 @@ public class ServerClientManager<T1, T2> where T1 : ClientIdentifier
 
     public void ClientDisconnected(T2 serverLink)
     {
-        T1 connectedClient = GetClientIdentifierFromConnected(serverLink);
+        T1? connectedClient = GetClientIdentifierFromConnected(serverLink);
         if (connectedClient != null)
         {
             ConnectedClients.Remove(connectedClient);
             ClientRemoved.Invoke(connectedClient, serverLink, false, true);
             return;
         }
-        T1 connectedWaiting = GetClientIdentifierFromWaiting(serverLink);
+        T1? connectedWaiting = GetClientIdentifierFromWaiting(serverLink);
         if (connectedWaiting != null)
         {
             WaitingClients.Remove(connectedWaiting);

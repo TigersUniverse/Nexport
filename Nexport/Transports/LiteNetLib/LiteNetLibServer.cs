@@ -6,11 +6,11 @@ namespace Nexport.Transports.LiteNetLib;
 
 public class LiteNetLibServer : Server
 {
-    private EventBasedNetListener _listener;
-    private NetManager _server;
+    private EventBasedNetListener? _listener;
+    private NetManager? _server;
     private readonly Dictionary<LiteNetLibClientIdentifier, NetPeer> connectedClients =
         new Dictionary<LiteNetLibClientIdentifier, NetPeer>();
-    private ServerClientManager<LiteNetLibClientIdentifier, NetPeer> _clientManager;
+    private ServerClientManager<LiteNetLibClientIdentifier, NetPeer>? _clientManager;
         
     public LiteNetLibServer(ServerSettings settings) : base(settings){}
 
@@ -60,8 +60,8 @@ public class LiteNetLibServer : Server
             {
                 byte[] msg = new byte[reader.AvailableBytes];
                 reader.GetBytes(msg, msg.Length);
-                MsgMeta msgMeta = Msg.GetMeta(msg);
-                if (_clientManager.IsClientWaiting(peer))
+                MsgMeta? msgMeta = Msg.GetMeta(msg);
+                if (_clientManager.IsClientWaiting(peer) && msgMeta != null)
                 {
                     try
                     {
@@ -77,13 +77,14 @@ public class LiteNetLibServer : Server
                         peer.Disconnect();
                     }
                 }
-                else
+                else if(msgMeta != null)
                 {
                     if (_clientManager.IsClientPresent(peer))
                     {
-                        LiteNetLibClientIdentifier clientIdentifier =
+                        LiteNetLibClientIdentifier? clientIdentifier =
                             _clientManager.GetClientIdentifierFromConnected(peer);
-                        OnMessage.Invoke(clientIdentifier, msgMeta, MessageChannel.Unknown);
+                        if(clientIdentifier != null)
+                            OnMessage.Invoke(clientIdentifier, msgMeta, MessageChannel.Unknown);
                     }
                     else
                         peer.Disconnect();
@@ -103,16 +104,16 @@ public class LiteNetLibServer : Server
 
     public override void Update() => _server?.PollEvents();
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
         if(closingMessage != null)
             BroadcastMessage(closingMessage);
-        _server.Stop();
+        _server?.Stop();
     }
 
     public override void SendMessage(ClientIdentifier client, byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
-        NetPeer peer = _clientManager.GetServerLinkFromConnected((LiteNetLibClientIdentifier) client);
+        NetPeer? peer = _clientManager?.GetServerLinkFromConnected((LiteNetLibClientIdentifier) client);
         if (peer != null)
         {
             NetDataWriter writer = new NetDataWriter();
@@ -123,7 +124,7 @@ public class LiteNetLibServer : Server
     }
 
     public override void BroadcastMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable,
-        ClientIdentifier excludeClientIdentifier = null)
+        ClientIdentifier? excludeClientIdentifier = null)
     {
         foreach (KeyValuePair<LiteNetLibClientIdentifier, NetPeer> keyValuePair in new Dictionary<LiteNetLibClientIdentifier, NetPeer>(
                      connectedClients))
@@ -144,9 +145,9 @@ public class LiteNetLibServer : Server
         }
     }
 
-    public override void KickClient(ClientIdentifier client, byte[] kickMessage = null)
+    public override void KickClient(ClientIdentifier client, byte[]? kickMessage = null)
     {
-        NetPeer peer = _clientManager.GetServerLinkFromConnected((LiteNetLibClientIdentifier) client);
+        NetPeer? peer = _clientManager?.GetServerLinkFromConnected((LiteNetLibClientIdentifier) client);
         if (peer != null)
         {
             if (kickMessage != null)

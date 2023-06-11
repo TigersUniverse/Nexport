@@ -19,15 +19,15 @@ public abstract class Client
     private List<ClientIdentifier> _clientIdentifiers = new List<ClientIdentifier>();
     public List<ClientIdentifier> ConnectedNetworkedClients => new List<ClientIdentifier>(_clientIdentifiers);
 
-    public ClientIdentifier LocalClient { get; private set; }
+    public ClientIdentifier? LocalClient { get; private set; }
         
     public ClientSettings Settings { get; }
 
     public Client(ClientSettings settings) => Settings = settings;
         
     private CancellationTokenSource cts = new CancellationTokenSource();
-    private Thread _thread;
-    private Task _task;
+    private Thread? _thread;
+    private Task? _task;
     private bool justJoined = true;
 
     private List<ClientIdentifier> excludeLocalClient(List<ClientIdentifier> list)
@@ -91,7 +91,8 @@ public abstract class Client
                         (ServerClientChange) Convert.ChangeType(meta.Data, meta.TypeOfData);
                     if (serverClientChange.LocalClientIdentifier != null)
                         LocalClient = serverClientChange.LocalClientIdentifier;
-                    List<ClientIdentifier> clientIdentifiers = serverClientChange.ConnectedClients.ToList();
+                    List<ClientIdentifier> clientIdentifiers = serverClientChange.ConnectedClients?.ToList() ??
+                                                               Array.Empty<ClientIdentifier>().ToList();
                     if (!justJoined)
                     {
                         getLeftClients(clientIdentifiers);
@@ -110,7 +111,7 @@ public abstract class Client
         OnDisconnect += () => _clientIdentifiers.Clear();
     }
 
-    public void Create()
+    public void Create(bool closeOnStop = false, Func<byte[]?>? getClosingMessage = null)
     {
         cts = new CancellationTokenSource();
         if (Settings.UseMultithreading)
@@ -125,6 +126,9 @@ public abstract class Client
                     Thread.Sleep(Settings.ThreadUpdate);
                     PostUpdate();
                 }
+                if (!closeOnStop) return;
+                byte[] closingMessage = getClosingMessage?.Invoke() ?? Array.Empty<byte>();
+                Close(closingMessage);
             });
             _thread.Start();
         }
@@ -140,6 +144,9 @@ public abstract class Client
                     Thread.Sleep(Settings.ThreadUpdate);
                     PostUpdate();
                 }
+                if (!closeOnStop) return;
+                byte[] closingMessage = getClosingMessage?.Invoke() ?? Array.Empty<byte>();
+                Close(closingMessage);
             });
         }
     }
@@ -149,8 +156,10 @@ public abstract class Client
     public virtual void Update(){}
         
     public virtual void PostUpdate(){}
-        
-    public abstract void Close(byte[] closingMessage = null);
+
+    public void Stop() => cts.Cancel();
+    
+    public abstract void Close(byte[]? closingMessage = null);
 
     public abstract void SendMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable);
 }

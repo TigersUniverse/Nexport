@@ -4,10 +4,10 @@ namespace Nexport.Transports.Telepathy;
 
 public class TelepathyServer : Server
 {
-    private global::Telepathy.Server _server;
+    private global::Telepathy.Server? _server;
     private readonly Dictionary<TelepathyClientIdentifier, int> connectedClients =
         new Dictionary<TelepathyClientIdentifier, int>();
-    private ServerClientManager<TelepathyClientIdentifier, int> _clientManager;
+    private ServerClientManager<TelepathyClientIdentifier, int>? _clientManager;
         
     public TelepathyServer(ServerSettings settings) : base(settings){}
 
@@ -54,8 +54,8 @@ public class TelepathyServer : Server
             try
             {
                 byte[] msg = bytes.ToArray();
-                MsgMeta msgMeta = Msg.GetMeta(msg);
-                if (_clientManager.IsClientWaiting(i))
+                MsgMeta? msgMeta = Msg.GetMeta(msg);
+                if (_clientManager.IsClientWaiting(i) && msgMeta != null)
                 {
                     try
                     {
@@ -71,12 +71,13 @@ public class TelepathyServer : Server
                         _server?.Disconnect(i);
                     }
                 }
-                else
+                else if(msgMeta != null)
                 {
                     if (_clientManager.IsClientPresent(i))
                     {
-                        TelepathyClientIdentifier clientIdentifier = _clientManager.GetClientIdentifierFromConnected(i);
-                        OnMessage.Invoke(clientIdentifier, msgMeta, MessageChannel.Unknown);
+                        TelepathyClientIdentifier? clientIdentifier = _clientManager?.GetClientIdentifierFromConnected(i);
+                        if(clientIdentifier != null)
+                            OnMessage.Invoke(clientIdentifier, msgMeta, MessageChannel.Unknown);
                     }
                     else
                         _server?.Disconnect(i);
@@ -96,22 +97,22 @@ public class TelepathyServer : Server
         
     public override void Update() => _server?.Tick(100);
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
         if(closingMessage != null)
             BroadcastMessage(closingMessage);
-        _server.Stop();
+        _server?.Stop();
     }
 
     public override void SendMessage(ClientIdentifier client, byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
-        int id = _clientManager.GetServerLinkFromConnected((TelepathyClientIdentifier) client);
+        int id = _clientManager?.GetServerLinkFromConnected((TelepathyClientIdentifier) client) ?? default;
         if (id != default)
-            _server.Send(id, new ArraySegment<byte>(message));
+            _server?.Send(id, new ArraySegment<byte>(message));
     }
 
     public override void BroadcastMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable,
-        ClientIdentifier excludeClientIdentifier = null)
+        ClientIdentifier? excludeClientIdentifier = null)
     {
         foreach (KeyValuePair<TelepathyClientIdentifier, int> keyValuePair in new Dictionary<TelepathyClientIdentifier, int>(
                      connectedClients))
@@ -127,14 +128,14 @@ public class TelepathyServer : Server
         }
     }
 
-    public override void KickClient(ClientIdentifier client, byte[] kickMessage = null)
+    public override void KickClient(ClientIdentifier client, byte[]? kickMessage = null)
     {
-        int id = _clientManager.GetServerLinkFromConnected((TelepathyClientIdentifier) client);
+        int id = _clientManager?.GetServerLinkFromConnected((TelepathyClientIdentifier) client) ?? default;
         if (id != default)
         {
             if(kickMessage != null)
-                _server.Send(id, new ArraySegment<byte>(kickMessage));
-            _server.Disconnect(id);
+                _server?.Send(id, new ArraySegment<byte>(kickMessage));
+            _server?.Disconnect(id);
         }
     }
 }

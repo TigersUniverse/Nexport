@@ -5,8 +5,8 @@ namespace Nexport.Transports.LiteNetLib;
 
 public class LiteNetLibClient : Client
 {
-    private EventBasedNetListener _listener;
-    private NetManager _client;
+    private EventBasedNetListener? _listener;
+    private NetManager? _client;
         
     public LiteNetLibClient(ClientSettings settings) : base(settings){}
 
@@ -24,8 +24,9 @@ public class LiteNetLibClient : Client
             {
                 byte[] data = new byte[dataReader.AvailableBytes];
                 dataReader.GetBytes(data, data.Length);
-                MsgMeta meta = Msg.GetMeta(data);
-                OnMessage.Invoke(meta, MessageChannel.Unknown);
+                MsgMeta? meta = Msg.GetMeta(data);
+                if(meta != null)
+                    OnMessage.Invoke(meta, MessageChannel.Unknown);
             }
             catch (Exception e)
             {
@@ -39,9 +40,9 @@ public class LiteNetLibClient : Client
 
     public override void Update() => _client?.PollEvents();
 
-    public override void Close(byte[] closingMessage = null)
+    public override void Close(byte[]? closingMessage = null)
     {
-        _client.Stop();
+        _client?.Stop();
     }
 
     public override void SendMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
@@ -51,7 +52,7 @@ public class LiteNetLibClient : Client
             NetDataWriter writer = new NetDataWriter();
             writer.Put(message);
             DeliveryMethod deliveryMethod = LiteNetLibTools.GetDeliveryMethod(messageChannel);
-            _client.FirstPeer.Send(writer, deliveryMethod);
+            _client?.FirstPeer.Send(writer, deliveryMethod);
         }
     }
 }

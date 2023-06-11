@@ -62,7 +62,19 @@ public class Msg : MessagePackObjectAttribute
     {
         if (assembly == null)
             return;
-        IEnumerable<Type> types = from type in assembly.GetTypes() where IsDefined(type, typeof(Msg)) select type;
+        IEnumerable<Type> types;
+        try
+        {
+            types = from type in assembly.GetTypes() where IsDefined(type, typeof(Msg)) select type;
+        }
+        catch (ReflectionTypeLoadException e)
+        {
+            types = new List<Type>();
+            IEnumerable<Type?> t = e.Types.Where(t => t != null);
+            foreach (Type? type in t)
+                if(type != null && IsDefined(type, typeof(Msg)))
+                    ((List<Type>) types).Add(type);
+        }
         foreach (Type type in types)
         {
             if (type.FullName != null)
@@ -77,13 +89,22 @@ public class Msg : MessagePackObjectAttribute
     public static void RefreshMessageTypes()
     {
         RegisteredMessages.Clear();
+        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            loopMessages(assembly);
         loopMessages(Assembly.GetExecutingAssembly());
         loopMessages(Assembly.GetEntryAssembly());
     }
 
+    public static void LoadCustomAssembly(Assembly? assembly) => loopMessages(assembly);
+
     static Msg()
     {
-        RefreshMessageTypes();
+        if(RegisteredMessages.Count <= 0)
+            try
+            {
+                RefreshMessageTypes();
+            }
+            catch(Exception){}
     }
 
     public static byte[] Serialize<T>(T obj)
@@ -104,7 +125,7 @@ public class Msg : MessagePackObjectAttribute
         return MessagePackSerializer.Deserialize<T>(data);
     }
 
-    public static object Deserialize(Type targetType, byte[] data)
+    public static object? Deserialize(Type targetType, byte[] data)
     {
         if (UseCompression)
         {
@@ -114,18 +135,27 @@ public class Msg : MessagePackObjectAttribute
         return MessagePackSerializer.Deserialize(targetType, data);
     }
 
-    public static MsgMeta GetMeta(byte[] data)
+    public static MsgMeta? GetMeta(byte[] data)
     {
-        dynamic dynamicModel;
-        if(UseCompression)
-            dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4BlockArray));
-        else
-            dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data, ContractlessStandardResolver.Options);
-        string msgid = dynamicModel[1];
-        if (!RegisteredMessages.ContainsKey(msgid))
+        try
+        {
+            dynamic dynamicModel;
+            if (UseCompression)
+                dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data,
+                    ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4BlockArray));
+            else
+                dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data, ContractlessStandardResolver.Options);
+            string msgid = dynamicModel[1];
+            if (!RegisteredMessages.ContainsKey(msgid))
+                return null;
+            Type t = RegisteredMessages[msgid];
+            object? d = Deserialize(t, data);
+            return d != null ? new MsgMeta(data, d, msgid, t) : null;
+        }
+        catch (Exception)
+        {
             return null;
-        Type t = RegisteredMessages[msgid];
-        return new MsgMeta(data, Deserialize(t, data), msgid, t);
+        }
     }
 }
     
