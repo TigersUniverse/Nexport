@@ -55,4 +55,15 @@ public class LiteNetLibClient : Client
             _client?.FirstPeer.Send(writer, deliveryMethod);
         }
     }
+
+    public async void SendMessageAsync(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
+    {
+        if (IsOpen)
+        {
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put(message);
+            DeliveryMethod deliveryMethod = LiteNetLibTools.GetDeliveryMethod(messageChannel);
+            _client?.FirstPeer.Send(writer, deliveryMethod);
+        }
+    }
 }

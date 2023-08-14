@@ -90,7 +90,18 @@ public class KCPServer : Server
         }, i => _clientManager.ClientDisconnected(i), (i, code, arg3) =>
         {
             _clientManager.ClientDisconnected(i);
-        }, Settings.UseIPV6, true, 10);
+        }, new KcpConfig
+        {
+            DualMode = Settings.UseIPV6,
+            RecvBufferSize = 6144000,
+            SendBufferSize = 6144000,
+            SendWindowSize = 8192,
+            ReceiveWindowSize = 8192,
+            Interval = 10,
+            NoDelay = true,
+            CongestionWindow = false,
+            MaxRetransmits = Kcp.DEADLINK * 2
+        });
         _server.Start((ushort) Settings.Port);
     }
 

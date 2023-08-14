@@ -45,12 +45,25 @@ internal class Program
                     Password = password
                 }));
             };
-            client.JoinedServer += () => Console.WriteLine("Joined Server!");
+            client.JoinedServer += () =>
+            {
+                Console.WriteLine("Joined Server!");
+                new Thread(() =>
+                {
+                    while (client.IsOpen)
+                    {
+                        byte[] data = Msg.Serialize(new UpdateMessage().Fill(10000));
+                        client.SendMessage(data);
+                        Thread.Sleep(1);
+                    }
+                }).Start();
+            };
             client.OnNetworkedClientConnect += identifier =>
                 Console.WriteLine("Client connected with identifier of " + identifier.Identifier);
             client.OnNetworkedClientDisconnect += identifier =>
                 Console.WriteLine("Client disconnected with identifier of " + identifier.Identifier);
             client.OnDisconnect += () => Console.WriteLine("Disconnected from Server!");
         }
+        Console.ReadKey(true);
     }
 }

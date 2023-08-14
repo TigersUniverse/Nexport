@@ -29,8 +29,19 @@ public class KCPClient : Client
         }, OnDisconnect, (code, s) =>
         {
             Console.WriteLine("TelepathyClient error " + code + " for reason " + s);
+        }, new KcpConfig
+        {
+            DualMode = Settings.UseIPV6,
+            RecvBufferSize = 6144000,
+            SendBufferSize = 6144000,
+            SendWindowSize = 8192,
+            ReceiveWindowSize = 8192,
+            Interval = 10,
+            NoDelay = true,
+            CongestionWindow = false,
+            MaxRetransmits = Kcp.DEADLINK * 2
         });
-        _client.Connect(Settings.Ip, (ushort) Settings.Port, true, 10);
+        _client.Connect(Settings.Ip, (ushort) Settings.Port);
     }
         
     public override void Update() => _client?.Tick();
