@@ -11,8 +11,6 @@ Nexport is written in C#, compiled to .Net Framework 4.8 and .NET 7
 
 Unlike other networking libraries, where you invoke methods to set data with certain types, Nexport allows you to control your messages with classes. Messages are Serialized and Deserialized using [MessagePack-CSharp](https://github.com/neuecc/MessagePack-CSharp).
 
-Compression is supported and can be controlled by setting `Msg.UseCompression`, but keep in mind, both the server and client must use the same setting.
-
 Message Classes are found once when Msg is first invoked (`static Msg()`), but can be scanned again by calling `Msg.RefreshMessageTypes()`
 
 Below is an example message that can be Serialized and Deserialized
@@ -21,19 +19,26 @@ Below is an example message that can be Serialized and Deserialized
 [Msg]
 public class MyCoolMessage
 {
-    [MsgKey(1)] public string MessageId => typeof(MyCoolMessage).FullName;
-    [MsgKey(2)] public string Message1;
-    [MsgKey(3)] public int Message2;
+    [MsgKey(1)] public string Message1;
+    [MsgKey(2)] public int Message2;
 }
 ```
 
-Some rules to take note of:
+The only restriction is that any serializable class must be on both the Server and Client to be Serialized/Deserialized
 
-1) All classes that can be Serialized/Deserialized must attribute with `Msg`
-2) All classes that can be Serialized/Deserialized must have a field/property called `MessageId` with a `MsgKey` of `1`
-    + Otherwise, an exception will throw
-3) While not required, it is recommended that MessageId should be the `typeof(type).FullName`
-4) The classes must be on both the Server and Client to be Serialized/Deserialized
+If you want to compress the message, simply add the `MsgCompress(int)` attribute
+
+```cs
+[Msg]
+[MsgCompress(16)]
+public class MyCoolMessage
+{
+    [MsgKey(1)] public string Message1;
+    [MsgKey(2)] public int Message2;
+}
+```
+
+*Compression Level is from 1 to 22*
 
 ### Creating a Server
 
@@ -174,25 +179,14 @@ client.Close();
 
 When a client or server receives a Message, you will be given an object with the class of MsgMeta. The MsgMeta class is what contains all information about a message, from only its byte array.
 
-To properly handle MsgMeta, you should:
-
-1) Know all your MessageIds, as this is how you will convert
-2) Know how to easily convert objects to their desired class
-    + Using [`Convert.ChangeType()`](https://learn.microsoft.com/en-us/dotnet/api/system.convert.changetype?view=netframework-4.8) really helps
-
-Knowing this, let's make an example handler for our messages
-
 ```cs
 // Assuming Client, no ClientIdentifier needed
 public static void HandleMessage(MsgMeta meta)
 {
-    switch(meta.DataId)
+    if(meta.TypeOfData == typeof(MyCoolMessage))
     {
-        case "MyCoolMessage":
-        {
-            MyCoolMessage msg = Msg.Deserialize<MyCoolMessage>(meta.RawData);
-            // do something with the msg object
-        }
+        MyCoolMessage myCoolMessage = (MyCoolMessage) meta.Data;
+        // do something with the myCoolMessage object
     }
 }
 ```

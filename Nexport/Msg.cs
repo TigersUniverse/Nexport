@@ -6,7 +6,6 @@ namespace Nexport;
 
 public class Msg : MessagePackObjectAttribute
 {
-    public static bool UseCompression { get; set; } = true;
     public static readonly Dictionary<string, Type> RegisteredMessages = new Dictionary<string, Type>();
     public static MessagePackSerializerOptions SerializerOptions = MessagePackSerializerOptions.Standard;
 
@@ -111,9 +110,12 @@ public class Msg : MessagePackObjectAttribute
     public static byte[] Serialize<T>(T obj)
     {
         byte[] data;
-        if (UseCompression)
-            data = MessagePackSerializer.Serialize(obj,
-                SerializerOptions.WithCompression(MessagePackCompression.Lz4BlockArray));
+        MsgCompress[]? compressMsgs = obj?.GetType().GetCustomAttributes(typeof(MsgCompress)) as MsgCompress[];
+        if (compressMsgs != null && compressMsgs.Length > 0)
+        {
+            byte[] d = MessagePackSerializer.Serialize(obj, SerializerOptions);
+            data = Compression.Compress(d, compressMsgs.First().Level);
+        }
         else
             data = MessagePackSerializer.Serialize(obj);
         string messageId = obj!.GetType().FullName ?? throw new Exception("Object does not have FullName!");
@@ -130,21 +132,16 @@ public class Msg : MessagePackObjectAttribute
     public static T Deserialize<T>(byte[] data)
     {
         (string, byte[]) midSplit = SplitMessageId(data);
-        if (UseCompression)
-        {
-            var options = SerializerOptions.WithCompression(MessagePackCompression.Lz4BlockArray);
-            return MessagePackSerializer.Deserialize<T>(midSplit.Item2, options);
-        }
+        if (RegisteredMessages.ContainsKey(midSplit.Item1) && RegisteredMessages[midSplit.Item1]
+                .GetCustomAttributes(typeof(MsgCompress)).ToArray().Length > 0)
+            return MessagePackSerializer.Deserialize<T>(Compression.Decompress(midSplit.Item2), SerializerOptions);
         return MessagePackSerializer.Deserialize<T>(midSplit.Item2);
     }
 
     private static object? Deserialize(Type targetType, byte[] data)
     {
-        if (UseCompression)
-        {
-            var options = SerializerOptions.WithCompression(MessagePackCompression.Lz4BlockArray);
-            return MessagePackSerializer.Deserialize(targetType, data, options);
-        }
+        if (targetType.GetCustomAttributes(typeof(MsgCompress)).ToArray().Length > 0)
+            return MessagePackSerializer.Deserialize(targetType, Compression.Decompress(data), SerializerOptions);
         return MessagePackSerializer.Deserialize(targetType, data);
     }
 

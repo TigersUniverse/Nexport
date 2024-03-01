@@ -1,9 +1,9 @@
 ﻿namespace Nexport.Tests;
 
 [Msg]
+[MsgCompress(22)]
 public class UpdateMessage
 {
-    [MsgKey(1)] public string MessageId => typeof(UpdateMessage).FullName;
     [MsgKey(2)] public List<object> Objects = new List<object>();
 
     public UpdateMessage Fill(int times)

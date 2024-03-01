@@ -52,7 +52,9 @@ internal class Program
                 {
                     while (client.IsOpen)
                     {
+                        DateTime before = DateTime.Now;
                         byte[] data = Msg.Serialize(new UpdateMessage().Fill(10000));
+                        Console.WriteLine($"Compression took {(DateTime.Now - before).Milliseconds}ms with size of {data.Length} bytes");
                         client.SendMessage(data);
                         Thread.Sleep(1);
                     }

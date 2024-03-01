@@ -3,16 +3,21 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>net48;net7.0;netstandard2.0</TargetFrameworks>
         <LangVersion>11</LangVersion>
+        <TargetFrameworks>net48;net7.0;netstandard2.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MessagePack" Version="2.5.108" />
+      <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
+      <PackageReference Include="MessagePack" Version="2.5.140" />
+      <PackageReference Include="ZstdSharp.Port" Version="0.7.4" />
     </ItemGroup>
 
 </Project>
