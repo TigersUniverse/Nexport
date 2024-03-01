@@ -9,55 +9,6 @@ public class Msg : MessagePackObjectAttribute
     public static readonly Dictionary<string, Type> RegisteredMessages = new Dictionary<string, Type>();
     public static MessagePackSerializerOptions SerializerOptions = MessagePackSerializerOptions.Standard;
 
-    /*private static void msgCheck(Type type)
-    {
-        bool foundMessageId = false;
-        foreach (PropertyInfo propertyInfo in type.GetProperties())
-        {
-            MsgKey[] attributes = (MsgKey[]) GetCustomAttributes(propertyInfo, typeof(MsgKey));
-            if (attributes.Length > 0)
-            {
-                if (attributes.Length > 1)
-                    throw new Exception("Cannot have multiple MsgKeys on one property!");
-                MsgKey target = attributes[0];
-                if (propertyInfo.Name == "MessageId")
-                {
-                    if (target.Identifier != 1)
-                        throw new Exception("MessageId must have a MsgKey Identifier of 1!");
-                    foundMessageId = true;
-                }
-                else
-                {
-                    if (target.Identifier == 1)
-                        throw new Exception("MessageId must have a MsgKey Identifier of 1!");
-                }
-            }
-        }
-        foreach (FieldInfo fieldInfo in type.GetFields())
-        {
-            MsgKey[] attributes = (MsgKey[]) GetCustomAttributes(fieldInfo, typeof(MsgKey));
-            if (attributes.Length > 0)
-            {
-                if (attributes.Length > 1)
-                    throw new Exception("Cannot have multiple MsgKeys on one property!");
-                MsgKey target = attributes[0];
-                if (fieldInfo.Name == "MessageId")
-                {
-                    if (target.Identifier != 1)
-                        throw new Exception("MessageId must have a MsgKey Identifier of 1!");
-                    foundMessageId = true;
-                }
-                else
-                {
-                    if (target.Identifier == 1)
-                        throw new Exception("MessageId must have a MsgKey Identifier of 1!");
-                }
-            }
-        }
-        if (!foundMessageId)
-            throw new Exception("Your Msg must contain a MessageId with an Identifier of 1!");
-    }*/
-
     private static void loopMessages(Assembly? assembly)
     {
         if (assembly == null)
@@ -172,18 +123,6 @@ public class Msg : MessagePackObjectAttribute
     {
         try
         {
-            /*dynamic dynamicModel;
-            if (UseCompression)
-                dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data,
-                    ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4BlockArray));
-            else
-                dynamicModel = MessagePackSerializer.Deserialize<dynamic>(data, ContractlessStandardResolver.Options);
-            string msgid = dynamicModel[1];
-            if (!RegisteredMessages.ContainsKey(msgid))
-                return null;
-            Type t = RegisteredMessages[msgid];
-            object? d = Deserialize(t, data);
-            return d != null ? new MsgMeta(data, d, msgid, t) : null;*/
             (string, byte[]) midSplit = SplitMessageId(data);
             if (!RegisteredMessages.ContainsKey(midSplit.Item1))
                 return null;
