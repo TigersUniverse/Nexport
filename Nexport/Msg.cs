@@ -86,7 +86,16 @@ public class Msg : MessagePackObjectAttribute
         if (RegisteredMessages.ContainsKey(midSplit.Item1) && RegisteredMessages[midSplit.Item1]
                 .GetCustomAttributes(typeof(MsgCompress)).ToArray().Length > 0)
             return MessagePackSerializer.Deserialize<T>(Compression.Decompress(midSplit.Item2), SerializerOptions);
-        return MessagePackSerializer.Deserialize<T>(midSplit.Item2);
+        return MessagePackSerializer.Deserialize<T>(midSplit.Item2, SerializerOptions);
+    }
+
+    public static object? Deserialize(byte[] data, Type type)
+    {
+        (string, byte[]) midSplit = SplitMessageId(data);
+        if (RegisteredMessages.ContainsKey(midSplit.Item1) && RegisteredMessages[midSplit.Item1]
+                .GetCustomAttributes(typeof(MsgCompress)).ToArray().Length > 0)
+            return MessagePackSerializer.Deserialize(type, Compression.Decompress(midSplit.Item2), SerializerOptions);
+        return MessagePackSerializer.Deserialize(type, midSplit.Item2, SerializerOptions);
     }
 
     private static object? Deserialize(Type targetType, byte[] data)
