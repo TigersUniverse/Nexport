@@ -10,6 +10,7 @@ public class SDRClientIdentifier : ClientIdentifier
 
     public static void InitSteamSpacewar()
     {
+        Dispatch.OnException = Console.WriteLine;
         SteamClient.Init(480);
     }
 

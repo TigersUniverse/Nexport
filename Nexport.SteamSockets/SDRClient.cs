@@ -59,6 +59,12 @@ public class SDRClient : Client, IConnectionManager
         _connectionManager.Interface = this;
     }
 
+    public override void Update()
+    {
+        base.Update();
+        _connectionManager?.Receive();
+    }
+
     public override void SendMessage(byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
         _connectionManager?.Connection.SendMessage(message, SDRClientIdentifier.GetSendType(messageChannel));

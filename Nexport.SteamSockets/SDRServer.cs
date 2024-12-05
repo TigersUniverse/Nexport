@@ -80,6 +80,12 @@ public class SDRServer : Server, ISocketManager
         _isOpen = true;
     }
 
+    public override void Update()
+    {
+        base.Update();
+        _socketManager?.Receive();
+    }
+
     public override void SendMessage(ClientIdentifier client, byte[] message, MessageChannel messageChannel = MessageChannel.Reliable)
     {
         Connection? connection = _clientManager?.GetServerLinkFromConnected((SDRClientIdentifier)client);
