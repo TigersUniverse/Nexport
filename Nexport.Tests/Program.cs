@@ -1,4 +1,5 @@
 ﻿using Nexport.Transports;
+using Nexport.Transports.SteamSockets;
 
 namespace Nexport.Tests;
 
@@ -11,8 +12,13 @@ internal class Program
     {
         Console.WriteLine("Is this a server? (y/n)");
         string inp = Console.ReadLine() ?? "n";
-        Console.WriteLine("Which Transport? (kcp/telepathy/litenetlib)");
-        TransportType transportType = Instantiator.GetTransportTypeFromString(Console.ReadLine() ?? "kcp");
+        Console.WriteLine("Which Transport? (kcp/telepathy/litenetlib/sdr)");
+        string transport = Console.ReadLine() ?? "kcp";
+        bool isSdr = transport.ToLower().Equals("sdr");
+        if (isSdr)
+        {
+            SDRClientIdentifier.InitSteamSpacewar();
+        }
         if (inp.ToLower().Contains("y"))
         {
             ServerSettings serverSettings = new ServerSettings("0.0.0.0", 3456, useMultithreading: true, requireMessageAuth: true)
@@ -23,7 +29,15 @@ internal class Program
                     result.Invoke(authMessage.Password == "1234");
                 }
             };
-            server = Instantiator.InstantiateServer(transportType, serverSettings);
+            if (isSdr)
+            {
+                server = new SDRServer(serverSettings);
+            }
+            else
+            {
+                TransportType transportType = Instantiator.GetTransportTypeFromString(transport);
+                server = Instantiator.InstantiateServer(transportType, serverSettings);
+            }
             server.Create();
             server.OnConnect += identifier =>
                 Console.WriteLine("Client connected with identifier of " + identifier.Identifier);
@@ -34,8 +48,18 @@ internal class Program
         {
             Console.WriteLine("What is the Password to Connect?");
             string password = Console.ReadLine() ?? "idk";
-            ClientSettings clientSettings = new ClientSettings("127.0.0.1", 3456, useMultithreading: true);
-            client = Instantiator.InstantiateClient(transportType, clientSettings);
+            Console.WriteLine("What is the IP Address? (leave blank for 127.0.0.1)");
+            string ip = Console.ReadLine() ?? "127.0.0.1";
+            ClientSettings clientSettings = new ClientSettings(ip, 3456, useMultithreading: true);
+            if (isSdr)
+            {
+                client = new SDRClient(clientSettings);
+            }
+            else
+            {
+                TransportType transportType = Instantiator.GetTransportTypeFromString(transport);
+                client = Instantiator.InstantiateClient(transportType, clientSettings);
+            }
             client.Create();
             client.OnConnect += () =>
             {

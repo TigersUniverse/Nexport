@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Nexport\Nexport.csproj" />
+      <ProjectReference Include="..\Nexport.SteamSockets\Nexport.SteamSockets.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net48;net7.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>11</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nexport\Nexport.csproj" />
+      <Reference Include="Steamworks">
+        <HintPath>Libs\Facepunch.Steamworks\Facepunch.Steamworks.Win64.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
