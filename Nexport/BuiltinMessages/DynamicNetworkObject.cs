@@ -9,6 +9,8 @@ namespace Nexport.BuiltinMessages;
 [Msg]
 public class DynamicNetworkObject
 {
+    private const BindingFlags BINDINGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+    
     [MsgKey(2)] public string TypeFullName { get; set; }
     [MsgKey(3)] public object? Data { get; set; }
 
@@ -43,13 +45,13 @@ public class DynamicNetworkObject
         if (target == null) throw new NullReferenceException();
         object instance = Activator.CreateInstance(target);
         List<(MsgKey, FieldInfo?, PropertyInfo?)> members = new List<(MsgKey, FieldInfo?, PropertyInfo?)>();
-        foreach (PropertyInfo p in target.GetProperties())
+        foreach (PropertyInfo p in target.GetProperties(BINDINGS))
         {
             Attribute[] attributes = p.GetCustomAttributes(typeof(MsgKey)).ToArray();
             if(attributes.Length <= 0) continue;
             members.Add(((MsgKey) attributes[0], null, p));
         }
-        foreach (FieldInfo f in target.GetFields())
+        foreach (FieldInfo f in target.GetFields(BINDINGS))
         {
             Attribute[] attributes = f.GetCustomAttributes(typeof(MsgKey)).ToArray();
             if(attributes.Length <= 0) continue;
@@ -81,13 +83,13 @@ public class DynamicNetworkObject
     {
         object instance = Activator.CreateInstance(memberType);
         List<(MsgKey, FieldInfo?, PropertyInfo?)> members = new List<(MsgKey, FieldInfo?, PropertyInfo?)>();
-        foreach (PropertyInfo p in memberType.GetProperties())
+        foreach (PropertyInfo p in memberType.GetProperties(BINDINGS))
         {
             Attribute[] attributes = p.GetCustomAttributes(typeof(MsgKey)).ToArray();
             if(attributes.Length <= 0) continue;
             members.Add(((MsgKey) attributes[0], null, p));
         }
-        foreach (FieldInfo f in memberType.GetFields())
+        foreach (FieldInfo f in memberType.GetFields(BINDINGS))
         {
             Attribute[] attributes = f.GetCustomAttributes(typeof(MsgKey)).ToArray();
             if(attributes.Length <= 0) continue;

@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
-        <TargetFrameworks>net48;net7.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

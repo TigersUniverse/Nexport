@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace LiteNetLib
 {
@@ -10,11 +11,19 @@ namespace LiteNetLib
         private long _bytesReceived;
         private long _packetLoss;
 
+#if NET9_0
+        public long PacketsSent => _packetsSent;
+        public long PacketsReceived => _packetsReceived;
+        public long BytesSent => _bytesSent;
+        public long BytesReceived => _bytesReceived;
+        public long PacketLoss => _packetLoss;
+#else
         public long PacketsSent => Interlocked.Read(ref _packetsSent);
         public long PacketsReceived => Interlocked.Read(ref _packetsReceived);
         public long BytesSent => Interlocked.Read(ref _bytesSent);
         public long BytesReceived => Interlocked.Read(ref _bytesReceived);
         public long PacketLoss => Interlocked.Read(ref _packetLoss);
+#endif
 
         public long PacketLossPercent
         {
