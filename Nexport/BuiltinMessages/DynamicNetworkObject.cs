@@ -10,6 +10,30 @@ namespace Nexport.BuiltinMessages;
 public class DynamicNetworkObject
 {
     private const BindingFlags BINDINGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+    private static Dictionary<string, Type> CachedDynamicTypes = new();
+    private static bool didInitialCache = false;
+
+    public static void CacheDynamicTypes()
+    {
+        if(didInitialCache) return;
+        // Cache all existing networked types
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (Assembly assembly in assemblies)
+        {
+            Type[] assemblyTypes = assembly.GetTypes();
+            foreach (Type type in assemblyTypes)
+            {
+                Attribute[] attributes = type.GetCustomAttributes(typeof(Msg)).ToArray();
+                if(attributes.Length <= 0) continue;
+                if(CachedDynamicTypes.ContainsKey(type.FullName)) continue;
+                CachedDynamicTypes.Add(type.FullName, type);
+            }
+        }
+        didInitialCache = true;
+    }
+
+    static DynamicNetworkObject() => CacheDynamicTypes();
     
     [MsgKey(2)] public string TypeFullName { get; set; }
     [MsgKey(3)] public object? Data { get; set; }
@@ -20,6 +44,7 @@ public class DynamicNetworkObject
     /// <returns>The restored Type</returns>
     public Type? GetRestoredType()
     {
+        if (CachedDynamicTypes.ContainsKey(TypeFullName)) return CachedDynamicTypes[TypeFullName];
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (Assembly assembly in assemblies)
         {
@@ -27,6 +52,7 @@ public class DynamicNetworkObject
             foreach (Type type in assemblyTypes)
             {
                 if(type.FullName != TypeFullName) continue;
+                CachedDynamicTypes.Add(TypeFullName, type);
                 return type;
             }
         }
