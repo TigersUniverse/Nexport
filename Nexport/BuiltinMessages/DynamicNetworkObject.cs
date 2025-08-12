@@ -24,7 +24,15 @@ public class DynamicNetworkObject
             Type[] assemblyTypes = assembly.GetTypes();
             foreach (Type type in assemblyTypes)
             {
-                Attribute[] attributes = type.GetCustomAttributes(typeof(Msg)).ToArray();
+                Attribute[] attributes;
+                try
+                {
+                    attributes = type.GetCustomAttributes(typeof(Msg)).ToArray();
+                }
+                catch (Exception)
+                {
+                    attributes = Array.Empty<Attribute>();
+                }
                 if(attributes.Length <= 0) continue;
                 if(CachedDynamicTypes.ContainsKey(type.FullName)) continue;
                 CachedDynamicTypes.Add(type.FullName, type);
