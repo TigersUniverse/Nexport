@@ -144,6 +144,9 @@ public class Msg : MessagePackObjectAttribute
             return null;
         }
     }
+    
+    public Msg(){}
+    public Msg(bool includePrivate) => AllowPrivate = includePrivate;
 }
     
 public class MsgKey : KeyAttribute
