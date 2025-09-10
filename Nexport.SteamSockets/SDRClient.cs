@@ -53,9 +53,16 @@ public class SDRClient : Client, IConnectionManager
 
     public override void RunTask()
     {
-        if (!ulong.TryParse(Settings.Ip, out ulong id))
-            return;
-        _connectionManager = SteamNetworkingSockets.ConnectRelay<ConnectionManager>(id, Settings.Port);
+        if (Settings.Port <= 0)
+        {
+            if (!ulong.TryParse(Settings.Ip, out ulong id))
+                return;
+            _connectionManager = SteamNetworkingSockets.ConnectRelay<ConnectionManager>(id);
+        }
+        else
+        {
+            _connectionManager = SteamNetworkingSockets.ConnectNormal<ConnectionManager>(NetAddress.From(Settings.Ip, (ushort)Settings.Port));
+        }
         _connectionManager.Interface = this;
     }
 

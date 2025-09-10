@@ -15,10 +15,6 @@ internal class Program
         Console.WriteLine("Which Transport? (kcp/telepathy/litenetlib/sdr)");
         string transport = Console.ReadLine() ?? "kcp";
         bool isSdr = transport.ToLower().Equals("sdr");
-        if (isSdr)
-        {
-            SDRClientIdentifier.InitSteamSpacewar();
-        }
         if (inp.ToLower().Contains("y"))
         {
             ServerSettings serverSettings = new ServerSettings("0.0.0.0", 3456, useMultithreading: true, requireMessageAuth: true)
@@ -31,6 +27,7 @@ internal class Program
             };
             if (isSdr)
             {
+                SDRClientIdentifier.InitSteamServerSpacewar(System.Net.IPAddress.Parse(serverSettings.Ip), (ushort)serverSettings.Port);
                 server = new SDRServer(serverSettings);
             }
             else
@@ -53,6 +50,7 @@ internal class Program
             ClientSettings clientSettings = new ClientSettings(ip, 3456, useMultithreading: true);
             if (isSdr)
             {
+                SDRClientIdentifier.InitSteamSpacewar();
                 client = new SDRClient(clientSettings);
             }
             else
@@ -90,6 +88,10 @@ internal class Program
                 Console.WriteLine("Client disconnected with identifier of " + identifier.Identifier);
             client.OnDisconnect += () => Console.WriteLine("Disconnected from Server!");
         }
-        Console.ReadKey(true);
+        while (true)
+        {
+            Thread.Sleep(10);
+        }
+        // Console.ReadKey(true);
     }
 }

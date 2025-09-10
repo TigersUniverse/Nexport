@@ -1,3 +1,4 @@
+using System.Net;
 using Steamworks;
 using Steamworks.Data;
 
@@ -12,6 +13,22 @@ public class SDRClientIdentifier : ClientIdentifier
     {
         Dispatch.OnException = Console.WriteLine;
         SteamClient.Init(480);
+    }
+
+    public static void InitSteamServerSpacewar(IPAddress ip, ushort port)
+    {
+        Dispatch.OnException = Console.WriteLine;
+        SteamServer.Init(480, new SteamServerInit()
+        {
+            DedicatedServer = true,
+            IpAddress = ip,
+            GamePort = port,
+            ModDir = "Spacewar",
+            GameDescription = "Spacewar",
+            QueryPort = ushort.MaxValue, // USEGAMESOCKETSHARE
+            Secure = false,
+            VersionString = "1.0.0.0",
+        });
     }
 
     public static SendType GetSendType(MessageChannel messageChannel)

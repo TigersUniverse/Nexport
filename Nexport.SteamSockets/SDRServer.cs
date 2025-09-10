@@ -75,7 +75,14 @@ public class SDRServer : Server, ISocketManager
             ServerClientChange serverClientChange = new ServerClientChange(ConnectedClients);
             BroadcastMessage(Msg.Serialize(serverClientChange));
         };
-        _socketManager = SteamNetworkingSockets.CreateRelaySocket<SocketManager>(Settings.Port);
+        if (Settings.Port <= 0)
+        {
+            _socketManager = SteamNetworkingSockets.CreateRelaySocket<SocketManager>();
+        }
+        else
+        {
+            _socketManager = SteamNetworkingSockets.CreateNormalSocket<SocketManager>(NetAddress.From(Settings.Ip, (ushort)Settings.Port));
+        }
         _socketManager.Interface = this;
         _isOpen = true;
     }
