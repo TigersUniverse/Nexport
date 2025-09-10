@@ -1,4 +1,5 @@
-﻿using Nexport.Transports;
+﻿using System.Threading.Tasks;
+using Nexport.Transports;
 using Nexport.Transports.SteamSockets;
 
 namespace Nexport.Tests;
@@ -8,7 +9,7 @@ internal class Program
     private static Server server;
     private static Client client;
         
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Console.WriteLine("Is this a server? (y/n)");
         string inp = Console.ReadLine() ?? "n";
@@ -17,7 +18,7 @@ internal class Program
         bool isSdr = transport.ToLower().Equals("sdr");
         if (inp.ToLower().Contains("y"))
         {
-            ServerSettings serverSettings = new ServerSettings("0.0.0.0", 3456, useMultithreading: true, requireMessageAuth: true)
+            ServerSettings serverSettings = new ServerSettings("0.0.0.0", 27015, useMultithreading: true, requireMessageAuth: true)
             {
                 ValidateMessage = (identifier, meta, result) =>
                 {
@@ -27,7 +28,7 @@ internal class Program
             };
             if (isSdr)
             {
-                SDRClientIdentifier.InitSteamServerSpacewar(System.Net.IPAddress.Parse(serverSettings.Ip), (ushort)serverSettings.Port);
+                await SDRClientIdentifier.InitSteamServerSpacewar(System.Net.IPAddress.Parse(serverSettings.Ip), (ushort)serverSettings.Port);
                 server = new SDRServer(serverSettings);
             }
             else

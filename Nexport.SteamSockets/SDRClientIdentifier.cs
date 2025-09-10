@@ -15,7 +15,7 @@ public class SDRClientIdentifier : ClientIdentifier
         SteamClient.Init(480);
     }
 
-    public static void InitSteamServerSpacewar(IPAddress ip, ushort port)
+    public static async Task InitSteamServerSpacewar(IPAddress ip, ushort port)
     {
         Dispatch.OnException = Console.WriteLine;
         SteamServer.Init(480, new SteamServerInit()
@@ -23,12 +23,23 @@ public class SDRClientIdentifier : ClientIdentifier
             DedicatedServer = true,
             IpAddress = ip,
             GamePort = port,
-            ModDir = "Spacewar",
-            GameDescription = "Spacewar",
-            QueryPort = ushort.MaxValue, // USEGAMESOCKETSHARE
+            QueryPort = (ushort)(port + 1),
+            ModDir = "spacewar",
+            GameDescription = "spacewar",
             Secure = false,
             VersionString = "1.0.0.0",
         });
+        TaskCompletionSource completionSource = new TaskCompletionSource();
+        SteamServer.OnSteamServersConnected += () =>
+        {
+            Console.WriteLine(SteamServer.LoggedOn);
+            completionSource.SetResult();
+        };
+        SteamServer.LogOnAnonymous();
+        SteamServer.AdvertiseServer = true;
+        SteamServer.ServerName = "spacewar test";
+        SteamServer.MapName = "Map";
+        await completionSource.Task.ConfigureAwait(false);
     }
 
     public static SendType GetSendType(MessageChannel messageChannel)
