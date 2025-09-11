@@ -29,7 +29,7 @@ internal class Program
             if (isSdr)
             {
                 await SDRClientIdentifier.InitSteamServerSpacewar(System.Net.IPAddress.Parse(serverSettings.Ip), (ushort)serverSettings.Port);
-                server = new SDRServer(serverSettings);
+                server = new SteamLiteNetLibServer(serverSettings);
             }
             else
             {
@@ -48,7 +48,7 @@ internal class Program
             string password = Console.ReadLine() ?? "idk";
             Console.WriteLine("What is the IP Address? (leave blank for 127.0.0.1)");
             string ip = Console.ReadLine() ?? "127.0.0.1";
-            ClientSettings clientSettings = new ClientSettings(ip, 3456, useMultithreading: true);
+            ClientSettings clientSettings = new ClientSettings(ip, 27015, useMultithreading: true);
             if (isSdr)
             {
                 SDRClientIdentifier.InitSteamSpacewar();
