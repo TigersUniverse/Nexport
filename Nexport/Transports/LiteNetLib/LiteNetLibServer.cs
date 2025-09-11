@@ -44,6 +44,7 @@ public class LiteNetLibServer : Server
         };
         _listener = new EventBasedNetListener();
         _server = new NetManager(_listener);
+        _server.ReuseAddress = true;
         _listener.ConnectionRequestEvent += request => request.Accept();
         _listener.PeerConnectedEvent += peer =>
         {
