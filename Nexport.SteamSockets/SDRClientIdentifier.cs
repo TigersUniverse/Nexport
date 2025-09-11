@@ -41,39 +41,6 @@ public class SDRClientIdentifier : ClientIdentifier
         SteamServer.ServerName = "spacewar test";
         SteamServer.MapName = "Map";
         await completionSource.Task;
-        // Thread thread = new Thread(() => UdpServer(port));
-        // thread.Start();
-    }
-
-    public static void UdpServer(ushort port)
-    {
-        IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
-        UdpClient client = new UdpClient();
-        client.ExclusiveAddressUse = false;
-        client.EnableBroadcast = true;
-        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-        // client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
-        client.Client.Bind(endPoint);
-        // client.JoinMulticastGroup(endPoint.Address);
-        while (true)
-        {
-            if (client.Available > 0)
-            {
-                byte[] data = client.Receive(ref endPoint);
-                if (data.Length > 3 && data[0] == byte.MaxValue && data[1] == byte.MaxValue && data[2] == byte.MaxValue && data[3] == byte.MaxValue)
-                {
-                    SteamServer.HandleIncomingPacket(data, data.Length, endPoint.Address.IpToInt32(), (ushort)endPoint.Port);
-                    while (SteamServer.GetOutgoingPacket(out OutgoingPacket packet))
-                    {
-                        client.Send(packet.Data, packet.Size, new IPEndPoint(Utility.Int32ToIp(packet.Address), packet.Port));
-                    }
-                }
-                else
-                {
-                    client.Send(data, data.Length, new IPEndPoint(IPAddress.Any, port));
-                }
-            }
-        }
     }
 
     public static SendType GetSendType(MessageChannel messageChannel)
