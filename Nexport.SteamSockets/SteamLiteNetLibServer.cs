@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Layers;
 using LiteNetLib.Utils;
@@ -14,6 +15,7 @@ public class SteamLiteNetLibServer : Server
     public class PacketLayer : PacketLayerBase
     {
         private readonly SteamLiteNetLibServer server;
+        private IPEndPoint ip = new IPEndPoint(IPAddress.Any, 0);
 
         public PacketLayer(SteamLiteNetLibServer srv) : base(0)
         {
@@ -28,13 +30,19 @@ public class SteamLiteNetLibServer : Server
                 length = 0;
                 while (SteamServer.GetOutgoingPacket(out OutgoingPacket packet))
                 {
-                    server._server?.SendUnconnectedMessage(packet.Data, 0, packet.Size, new IPEndPoint(Utility.Int32ToIp(packet.Address), packet.Port));
+                    ip = new IPEndPoint(Utility.Int32ToIp(packet.Address), packet.Port);
+                    server._server?.SendUnconnectedMessage(packet.Data, 0, packet.Size, ip);
                 }
             }
         }
 
         public override void ProcessOutBoundPacket(ref IPEndPoint endPoint, ref byte[] data, ref int offset, ref int length)
         {
+            if (endPoint == ip)
+            {
+                offset += 1;
+                length -= 1;
+            }
         }
     }
 
@@ -76,6 +84,7 @@ public class SteamLiteNetLibServer : Server
         };
         _listener = new EventBasedNetListener();
         _server = new NetManager(_listener, new PacketLayer(this));
+        _server.UnconnectedMessagesEnabled = true;
         _listener.ConnectionRequestEvent += request => request.Accept();
         _listener.PeerConnectedEvent += peer =>
         {
