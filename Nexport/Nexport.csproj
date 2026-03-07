@@ -5,19 +5,64 @@
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
+        <Configurations>Debug;Release;Release-Immutable</Configurations>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DebugType>none</DebugType>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
+    <PropertyGroup Condition="'$(Configuration)' == 'Release-Immutable'">
+        <AssemblyName>Nexport-Immutable</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'net48'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net472\MessagePack.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net48'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net472\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'net9.0'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net9.0\MessagePack.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net9.0'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net9.0\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\netstandard2.1\MessagePack.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\netstandard2.1\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release-Immutable'">
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'net48'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\net472\MessagePack-Immutable.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net48'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\net472\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'net9.0'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\net9.0\MessagePack-Immutable.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net9.0'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\net9.0\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\netstandard2.1\MessagePack-Immutable.dll</HintPath>
+        </Reference>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release-Immutable\netstandard2.1\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MessagePack" Version="3.1.4" />
-      <PackageReference Include="ZstdSharp.Port" Version="0.8.6" />
+        <PackageReference Include="ZstdSharp.Port" Version="0.8.6" />
     </ItemGroup>
 
 </Project>

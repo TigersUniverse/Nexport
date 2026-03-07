@@ -12,4 +12,22 @@
       <ProjectReference Include="..\Nexport\Nexport.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net48'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net472\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'net9.0'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\net9.0\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="MessagePack.Annotations" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+            <HintPath>..\..\MessagePack-CSharp\bin\MessagePack\Release\netstandard2.1\MessagePack.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
 </Project>
